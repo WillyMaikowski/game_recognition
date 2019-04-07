@@ -135,7 +135,7 @@ def main(video_file):
     output_path = os.path.join('./dist')
     os.makedirs(output_path, exist_ok=True)
 
-    # generate video filenames as sequences
+    # generate video filenames as sequences. Use 1-base for maintainers
     basename = os.path.basename(video_file)
     base = basename.split('.')[0]
     for i, time_code in enumerate(time_codes, 1):
