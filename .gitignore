@@ -1,6 +1,9 @@
 # Pycharm files
 .idea
 
+# ignore working mp4 files
+*.mp4
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -106,3 +109,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
