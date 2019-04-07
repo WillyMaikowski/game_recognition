@@ -1,3 +1,4 @@
+from datetime import datetime
 import numpy as np
 import math
 import cv2
@@ -13,11 +14,13 @@ if len( sys.argv ) is not 2:
 	print( 'Usage: python process_video.py <videofile.mp4>' )
 	quit()
 
+start_time = datetime.now()
+
 cap = cv2.VideoCapture( sys.argv[1] )
 fps = math.ceil( cap.get( cv2.CAP_PROP_FPS ) )
 
 fourcc = cv2.VideoWriter_fourcc(*'FMP4')
-framesize = ( cap.get( cv2.CAP_PROP_FRAME_WIDTH ), cap.get( cv2.CAP_PROP_FRAME_HEIGHT ) )
+framesize = ( int( cap.get( cv2.CAP_PROP_FRAME_WIDTH ) ), int( cap.get( cv2.CAP_PROP_FRAME_HEIGHT ) ) )
 
 line = []
 base = cv2.imread( 'base.png' )
@@ -53,7 +56,7 @@ while( cap.isOpened() ):
 		out = cv2.VideoWriter( 'frame_'+str(c)+'.mp4', fourcc, fps, framesize )
 		ini = c
 
-	#out.write( frame )
+	out.write( frame )
 
 
 if started:
@@ -80,3 +83,4 @@ for (ini,end) in games:
 	games_time.append( str( m_ini )+':'+str( s_ini )+' - '+str( m_end )+':'+str( s_end ) )
 
 print( games_time )
+print( (datetime.now()-start_time).total_seconds() )
