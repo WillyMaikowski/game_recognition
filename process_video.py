@@ -19,7 +19,7 @@ start_time = datetime.now()
 cap = cv2.VideoCapture( sys.argv[1] )
 fps = math.ceil( cap.get( cv2.CAP_PROP_FPS ) )
 
-fourcc = cv2.VideoWriter_fourcc(*'FMP4')
+fourcc = 0x00000020 #cv2.VideoWriter_fourcc( *'AVC1' )
 framesize = ( int( cap.get( cv2.CAP_PROP_FRAME_WIDTH ) ), int( cap.get( cv2.CAP_PROP_FRAME_HEIGHT ) ) )
 
 line = []
@@ -74,11 +74,11 @@ for (ini,end) in games:
 			os.remove( 'frame_'+str( ini )+'.mp4' )
 		continue
 
-	m_ini = math.floor( ini/3600 )
-	s_ini = math.ceil( (ini/60)-(m_ini*60) )
+	m_ini = int( math.floor( ini/3600 ) )
+	s_ini = int( math.ceil( (ini/60)-(m_ini*60) ) )
 
-	m_end = math.floor( end/3600 )
-	s_end = math.ceil( (end/60)-(m_end*60) )
+	m_end = int( math.floor( end/3600 ) )
+	s_end = int( math.ceil( (end/60)-(m_end*60) ) )
 
 	games_time.append( str( m_ini )+':'+str( s_ini )+' - '+str( m_end )+':'+str( s_end ) )
 
