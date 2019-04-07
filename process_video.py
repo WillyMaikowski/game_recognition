@@ -42,7 +42,7 @@ while( cap.isOpened() ):
 	if diff > 10:
 		if started:
 			started = False
-			#out.release()
+			out.release()
 			games.append( ( ini, c ) )
 			print( '.' )
 
@@ -50,11 +50,15 @@ while( cap.isOpened() ):
 
 	if not started:
 		started = True
-		#out = cv2.VideoWriter( 'frame_'+str(c)+'.mp4', fourcc, fps, framesize )
+		out = cv2.VideoWriter( 'frame_'+str(c)+'.mp4', fourcc, fps, framesize )
 		ini = c
 
 	#out.write( frame )
 
+
+if started:
+	out.release()
+	games.append( ( ini, c ) )
 
 cap.release()
 cv2.destroyAllWindows()
@@ -70,9 +74,9 @@ for (ini,end) in games:
 	m_ini = math.floor( ini/3600 )
 	s_ini = math.ceil( (ini/60)-(m_ini*60) )
 
-	m_fin = math.floor( fin/3600 )
-	s_fin = math.ceil( (fin/60)-(m_fin*60) )
+	m_end = math.floor( end/3600 )
+	s_end = math.ceil( (end/60)-(m_end*60) )
 
-	games_time.append( str( m_ini )+':'+str( s_ini )+' - '+str( m_fin )+':'+str( s_fin ) )
+	games_time.append( str( m_ini )+':'+str( s_ini )+' - '+str( m_end )+':'+str( s_end ) )
 
 print( games_time )
