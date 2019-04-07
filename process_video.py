@@ -1,8 +1,19 @@
 import numpy as np
 import math
 import cv2
+import sys
+import os
 
-cap = cv2.VideoCapture( 'crlvideo.mp4' )
+#base to detect when a frame is a gameplay
+if not os.path.exists( 'base.png' ):
+	print( 'the file base.png doesnt exists' )
+	quit()
+
+if len( sys.argv ) is not 2:
+	print( 'Usage: python process_video.py <videofile.mp4>' )
+	quit()
+
+cap = cv2.VideoCapture( sys.argv[1] )
 fps = math.ceil( cap.get( cv2.CAP_PROP_FPS ) )
 
 fourcc = cv2.VideoWriter_fourcc(*'FMP4')
@@ -20,7 +31,7 @@ games = []
 started = False
 while( cap.isOpened() ):
 	ret, frame = cap.read()
-	if not ret: continue
+	if not ret: break
 	c += 1
 
 	line2 = []
@@ -33,6 +44,7 @@ while( cap.isOpened() ):
 			started = False
 			#out.release()
 			games.append( ( ini, c ) )
+			print( '.' )
 
 		continue
 
@@ -46,4 +58,21 @@ while( cap.isOpened() ):
 
 cap.release()
 cv2.destroyAllWindows()
-print( games )
+
+games_time = []
+for (ini,end) in games:
+	if end-ini < 60*90:
+		#too short. maybe a repetition
+		if os.path.exists( 'frame_'+str( ini )+'.mp4' ):
+			os.remove( 'frame_'+str( ini )+'.mp4' )
+		continue
+
+	m_ini = math.floor( ini/3600 )
+	s_ini = math.ceil( (ini/60)-(m_ini*60) )
+
+	m_fin = math.floor( fin/3600 )
+	s_fin = math.ceil( (fin/60)-(m_fin*60) )
+
+	games_time.append( str( m_ini )+':'+str( s_ini )+' - '+str( m_fin )+':'+str( s_fin ) )
+
+print( games_time )
