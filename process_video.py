@@ -19,8 +19,8 @@ start_time = datetime.now()
 cap = cv2.VideoCapture( sys.argv[1] )
 fps = math.ceil( cap.get( cv2.CAP_PROP_FPS ) )
 
-fourcc = 0x00000020 #cv2.VideoWriter_fourcc( *'AVC1' )
-framesize = ( int( cap.get( cv2.CAP_PROP_FRAME_WIDTH ) ), int( cap.get( cv2.CAP_PROP_FRAME_HEIGHT ) ) )
+#fourcc = 0x00000020 #cv2.VideoWriter_fourcc( *'AVC1' )
+#framesize = ( int( cap.get( cv2.CAP_PROP_FRAME_WIDTH ) ), int( cap.get( cv2.CAP_PROP_FRAME_HEIGHT ) ) )
 
 line = []
 base = cv2.imread( 'base.png' )
@@ -33,9 +33,14 @@ ini = 0
 games = []
 started = False
 while( cap.isOpened() ):
-	ret, frame = cap.read()
+	ret = cap.grab()
 	if not ret: break
 	c += 1
+
+	if c % (fps*5) > 0: continue
+
+	ret, frame = cap.retrieve()
+	if not ret: break
 
 	line2 = []
 	for h in frame: line2.append( h[10] )
@@ -45,7 +50,7 @@ while( cap.isOpened() ):
 	if diff > 10:
 		if started:
 			started = False
-			out.release()
+			#out.release()
 			games.append( ( ini, c ) )
 			print( '.' )
 
@@ -53,14 +58,14 @@ while( cap.isOpened() ):
 
 	if not started:
 		started = True
-		out = cv2.VideoWriter( 'frame_'+str(c)+'.mp4', fourcc, fps, framesize )
+		#out = cv2.VideoWriter( 'frame_'+str(c)+'.mp4', fourcc, fps, framesize )
 		ini = c
 
-	out.write( frame )
+	#out.write( frame )
 
 
 if started:
-	out.release()
+	#out.release()
 	games.append( ( ini, c ) )
 
 cap.release()
@@ -70,15 +75,17 @@ games_time = []
 for (ini,end) in games:
 	if end-ini < 60*90:
 		#too short. maybe a repetition
-		if os.path.exists( 'frame_'+str( ini )+'.mp4' ):
-			os.remove( 'frame_'+str( ini )+'.mp4' )
+		#if os.path.exists( 'frame_'+str( ini )+'.mp4' ):
+			#os.remove( 'frame_'+str( ini )+'.mp4' )
 		continue
 
-	m_ini = int( math.floor( ini/3600 ) )
-	s_ini = int( math.ceil( (ini/60)-(m_ini*60) ) )
+	ini -= fps*5
 
-	m_end = int( math.floor( end/3600 ) )
-	s_end = int( math.ceil( (end/60)-(m_end*60) ) )
+	m_ini = int( math.floor( ini/(fps*60) ) )
+	s_ini = int( math.ceil( (ini/fps)-(m_ini*60) ) )
+
+	m_end = int( math.floor( end/(fps*60) ) )
+	s_end = int( math.ceil( (end/fps)-(m_end*60) ) )
 
 	games_time.append( str( m_ini )+':'+str( s_ini )+' - '+str( m_end )+':'+str( s_end ) )
 
