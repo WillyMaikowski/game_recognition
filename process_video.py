@@ -1,3 +1,4 @@
+import argparse
 import csv
 import math
 import os
@@ -34,7 +35,12 @@ def frames_to_timecode(frames, fps):
     return f"{hours:02d}:{mins:02d}:{secs:02d}"
 
 
-def main(video_file):
+def main(video_file, base_image):
+    """Main prorgram.
+
+    video_file: path to the video to be processed
+    base_image: base image for feature detection.
+    """
     start_time = datetime.now()
 
     cap = cv2.VideoCapture(video_file)
@@ -43,7 +49,7 @@ def main(video_file):
     # fourcc = 0x00000020 #cv2.VideoWriter_fourcc( *'AVC1' )
     # framesize = ( int( cap.get( cv2.CAP_PROP_FRAME_WIDTH ) ), int( cap.get( cv2.CAP_PROP_FRAME_HEIGHT ) ) )
 
-    line = get_feature_line(cv2.imread('base.png'))
+    line = get_feature_line(cv2.imread(base_image))
 
     # line = []
     # base = cv2.imread('base.png')
@@ -162,13 +168,29 @@ def main(video_file):
 
 
 if __name__ == '__main__':
-    # base to detect when a frame is a gameplay
-    if not os.path.exists('base.png'):
-        print('the file base.png doesnt exists')
+    parser = argparse.ArgumentParser(description="Process CRL videos")
+    parser.add_argument('--videos', nargs='+', default=None, help="List of videos to process")
+    parser.add_argument('--folder', default=None, help="Folder containing videos")
+    parser.add_argument('--base', default='./base.png', help="Base image")
+    args = parser.parse_args(sys.argv[1:])
+
+    if not os.path.exists(args.base):
+        print("The file base.png doesn’t exist")
         quit()
 
-    if len(sys.argv) is not 2:
-        print('Usage: python process_video.py <videofile.mp4>')
-        quit()
+    if args.videos:
+        for video in args.videos:
+            main(video, args.base)
 
-    main(sys.argv[1])
+    if args.folder:
+        if not os.path.exists(args.folder):
+            print(f"folder {args.folder} does not exist")
+            quit()
+
+        for dirpath, _, filenames in os.walk(args.folder):
+            for f in filenames:
+                video = os.path.join(dirpath, f)
+                if not video.endswith('mp4'):
+                    continue
+
+                main(video, args.base)
