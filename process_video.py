@@ -35,7 +35,7 @@ def frames_to_timecode(frames, fps):
     return f"{hours:02d}:{mins:02d}:{secs:02d}"
 
 
-def main(video_file, base_image):
+def main(video_file, base_image, output_folder=None):
     """Main prorgram.
 
     video_file: path to the video to be processed
@@ -138,7 +138,7 @@ def main(video_file, base_image):
     print("\n".join(games_time))
 
     # out paths
-    output_path = os.path.join('./dist')
+    output_path = os.path.join(output_folder)
     os.makedirs(output_path, exist_ok=True)
 
     # generate video filenames as sequences. Use 1-base for maintainers
@@ -168,19 +168,28 @@ def main(video_file, base_image):
 
 
 if __name__ == '__main__':
+    """
+    e.g.
+    python process_video.py \
+        --folder "/Users/sml/Dropbox/CRL2019 Clean Feed/W2" \
+        --output "/Users/sml/Dropbox/CRL2019 Clean Feed/W2_dist"
+    """
     parser = argparse.ArgumentParser(description="Process CRL videos")
     parser.add_argument('--videos', nargs='+', default=None, help="List of videos to process")
     parser.add_argument('--folder', default=None, help="Folder containing videos")
     parser.add_argument('--base', default='./base.png', help="Base image")
+    parser.add_argument('--output', default='./dist', help="Output folder")
     args = parser.parse_args(sys.argv[1:])
 
     if not os.path.exists(args.base):
         print("The file base.png doesn’t exist")
         quit()
 
+    input_videos = []
+
     if args.videos:
         for video in args.videos:
-            main(video, args.base)
+            input_videos.append(video)
 
     if args.folder:
         if not os.path.exists(args.folder):
@@ -193,4 +202,8 @@ if __name__ == '__main__':
                 if not video.endswith('mp4'):
                     continue
 
-                main(video, args.base)
+                input_videos.append(video)
+
+    # run script
+    for video in input_videos:
+        main(video, args.base, output_folder=args.output)
