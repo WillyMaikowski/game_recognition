@@ -171,8 +171,8 @@ if __name__ == '__main__':
     """
     e.g.
     python process_video.py \
-        --folder "/Users/sml/Dropbox/CRL2019 Clean Feed/W2" \
-        --output "/Users/sml/Dropbox/CRL2019 Clean Feed/W2_dist"
+        --folder "/Users/sml/Dropbox/CRL-2019-CN-UP/W4" \
+        --output "/Users/sml/Dropbox/CRL-2019-CN-UP/W4_dist"
     """
     parser = argparse.ArgumentParser(description="Process CRL videos")
     parser.add_argument('--videos', nargs='+', default=None, help="List of videos to process")
