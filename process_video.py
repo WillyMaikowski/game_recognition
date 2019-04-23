@@ -199,10 +199,11 @@ if __name__ == '__main__':
         for dirpath, _, filenames in os.walk(args.folder):
             for f in filenames:
                 video = os.path.join(dirpath, f)
-                if not video.endswith('mp4'):
+                if not video.lower().endswith('mp4'):
                     continue
 
                 input_videos.append(video)
+
 
     # run script
     for video in input_videos:
